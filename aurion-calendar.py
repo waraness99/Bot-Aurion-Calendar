@@ -106,8 +106,12 @@ for event in events_json['events']:
     event.add('summary', title)
     event.add('dtstart', start)
     event.add('dtend', end)
-    event['location'] = vText(
-        'HEI – Hautes Études d’Ingénieur 13 Rue de Toul, 59014 Lille, France')
+    if "HEI" in title:
+        event['location'] = vText(
+            'HEI – Hautes Études d’Ingénieur 13 Rue de Toul, 59014 Lille, France')
+    if "EURATECH" in title:
+        event['location'] = vText(
+            'Euratechnologies, 58 Allée Marie-thérèse Vicot-Lhermitte, 59000, Lille')
     cal.add_component(event)
 
 
