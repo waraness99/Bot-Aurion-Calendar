@@ -46,7 +46,7 @@ username_input.send_keys(AURION_EMAIL)
 password_input = driver.find_element(By.ID, 'password')
 password_input.send_keys(AURION_PASSWORD)
 # Submit form
-driver.find_element(By.ID, 'j_idt39').click()
+driver.find_element(By.ID, 'j_idt28').click()
 
 
 # Wait home page to be displayed
