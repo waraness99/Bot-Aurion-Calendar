@@ -87,8 +87,13 @@ driver.close()
 decoded_response_body = str(response_body, 'utf-8')
 parsed_response_body = ET.ElementTree(ET.fromstring(decoded_response_body))
 events_string = parsed_response_body.find(
-    './/update[@id="form:j_idt117"]').text
+    './/update[@id="form:j_idt118"]').text
 events_json = json.loads(events_string)
+
+
+def clean_title(titles):
+    titles.remove("\n")
+    return [title.replace('\n', '') for title in titles]
 
 
 # Create .ics file to export events
@@ -96,14 +101,17 @@ cal = Calendar()
 for event in events_json['events']:
     # process title
     raw_title = str(event['title'])
-    array_title = raw_title.splitlines(True)
-    title = array_title[1].rstrip() + array_title[0].rstrip()
+    array_title = clean_title(raw_title.splitlines(True))
+    title = f"{array_title[1]}"
+    # process description
+    description = f"{array_title[4]} - {array_title[0]}"
     # process date
     start = dateutil.parser.parse(event['start'])
     end = dateutil.parser.parse(event['end'])
     # create event
     event = Event()
     event.add('summary', title)
+    event.add('description', description)
     event.add('dtstart', start)
     event.add('dtend', end)
     if "HEI" in title:
@@ -117,7 +125,7 @@ for event in events_json['events']:
 
 # Save .ics file
 directory = str(Path.home() / "Downloads") + "/"
-print("ics file will be generated at ", directory)
+print(".ics file will be generated at ", directory)
 f = open(os.path.join(directory, 'aurion-events.ics'), 'wb')
 f.write(cal.to_ical())
 f.close()
