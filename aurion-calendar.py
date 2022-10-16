@@ -87,13 +87,17 @@ driver.close()
 decoded_response_body = str(response_body, 'utf-8')
 parsed_response_body = ET.ElementTree(ET.fromstring(decoded_response_body))
 events_string = parsed_response_body.find(
-    './/update[@id="form:j_idt118"]').text
+    './/update[@id="form:j_idt117"]').text
 events_json = json.loads(events_string)
 
 
 def clean_title(titles):
-    titles.remove("\n")
-    return [title.replace('\n', '') for title in titles]
+    new_title = []
+    for title in titles:
+        if title != "\n":
+            new_title.append(title.replace("\n", ""))
+
+    return new_title
 
 
 # Create .ics file to export events
@@ -101,10 +105,17 @@ cal = Calendar()
 for event in events_json['events']:
     # process title
     raw_title = str(event['title'])
+    print("raw_title type", raw_title.splitlines(True))
     array_title = clean_title(raw_title.splitlines(True))
-    title = f"{array_title[1]}"
-    # process description
-    description = f"{array_title[4]} - {array_title[0]}"
+    print("array_title", array_title)
+    if len(array_title) == 5:
+        title = f"{array_title[1]}"
+        # process description
+        description = f"{array_title[2]} with {array_title[4]} at {array_title[0]}"
+    elif len(array_title) == 6:
+        title = f"{array_title[2]} ({array_title[1]})"
+        # process description
+        description = f"{array_title[3]} with {array_title[5]} at {array_title[0]}"
     # process date
     start = dateutil.parser.parse(event['start'])
     end = dateutil.parser.parse(event['end'])
